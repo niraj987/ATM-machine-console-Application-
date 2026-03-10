@@ -1,47 +1,75 @@
-# ATM-machine-console-Application-
-This console-based Python banking app securely manages a single user's account via a dictionary (name, account number, balance, 4-digit PIN). It features:  3-strike PIN lockout Balance check Deposit (accepts only standard denominations: $10/$20/$50/$100) Withdrawal (checks funds + $20 multiples) PIN change (with current PIN verification) .
+# 🏦 Modern Smart ATM Web Application
 
-1. Project Objective
-The primary objective of this project is the functional logic of an Automated Teller Machine (ATM). It aims to provide a secure environment for users to perform basic banking tasks such as balance inquiries, fund transfers (deposits/withdrawals), and account security management through a command-line interface.
-2. Project Description
-This software is a console-based program that manages a single user's bank account details using a Python dictionary. The system mimics real-world security protocols, including PIN validation and a "three-strike" lockout mechanism. It ensures data integrity by checking for sufficient funds during withdrawals and validating currency denominations during deposits.
-3. Core Goals
-Security: To protect user accounts via 4-digit PIN authentication.
-Account Management: To allow real-time updates to account balances and security credentials.
-User Experience: To provide a clear, menu-driven interface for easy navigation.
-Error Handling: To prevent illegal operations (e.g., withdrawing more than the available balance or entering invalid PIN lengths).
-________________________________________
-4. Technical Specifications & Logic
-4.1 Data Architecture
-The project utilizes a dictionary-based structure to store user data, which allows  user to check balance, deposit money when retrieving user attributes:
-Balance: Integer representing the current funds.
-Is_Blocked: Boolean flag to control account access.
-ATM pin: String value for security comparisons.
-4.2 Key Features
-Authentication Loop: A while loop combined with a chance’s variable limits the user to three attempts before the card is flagged as blocked.
-Withdrawal Validation: * Condition: amount <= user_information["Balance"]
-Deposit Constraints: * Condition: Minimum deposit of ₹500.
-Condition: Must be in multiples of 100.
-Self-Blocking Mechanism: A dedicated option for users to manually block their card in case of an emergency (theft/loss).
-________________________________________
-5. System Flowchart (Logical Steps)
-Start: Display Bank Welcome message.
-Verification: Check if Is_Blocked is True. If yes, terminate.
-PIN Entry: User enters 4-digit PIN.
-Invalid: Decrease chances. At 0, block card.
-Valid: Proceed to Menu.
-Operation Selection: * 1: Display Balance.
-2: Subtract from Balance (if funds exist).
-3: Add to Balance (if > 500 and multiple of 100).
-4: Update PIN string.
-5: Set Is_Blocked to True and Exit.
-End: Display "Thank You" message and exit.
-________________________________________
+A fully functional, elegantly designed ATM interface built with a **Python Flask** backend and a **Vanilla JS/CSS** frontend. This project simulates a real-world ATM with multi-user authentication, real-time balance tracking, interactive transaction receipts, strict daily limits, and dynamic inter-account bank transfers.
 
-6. Future Enhancements
-Persistent Storage: Integrating a SQL database or JSON file to save data after the program closes.
-Multi-User Support: Transitioning from a single dictionary to a list of dictionaries or an Object-Oriented (OOP) approach.
-GUI: Developing a Graphical User Interface using libraries like Tkinter or flask.
+![Premium Glassmorphism Design](https://img.shields.io/badge/UI-Glassmorphism-6366f1.svg)
+![Python](https://img.shields.io/badge/Backend-Python_Flask-3776AB?logo=python&logoColor=white)
+![Frontend](https://img.shields.io/badge/Frontend-HTML/CSS/JS-E34F26?logo=html5)
+
+## ✨ Key Features
+
+- **🔐 Multi-User Authentication**: Secure login system requiring an Account Number and a 4-digit PIN.
+- **💸 Real-Time Transactions**: Instantly process Cash Withdrawals and Deposits.
+- **🏦 Bank Transfers**: Instantly send money to other valid accounts within the system.
+- **🛑 Daily Limits**: Built-in fraud prevention enforcing a strict ₹20,000 daily withdrawal & transfer limit per account.
+- **🧾 Smart Receipts**: Beautifully formatted receipts for every successful transaction including auto-generated Transaction IDs, timestamps, and remaining balances. (Supports physical printing via native browser print).
+- **📝 Audit History**: A detailed, scrollable transaction history logging every credit and debit to the account.
+- **⚙️ Account Settings**: Safely change user PINs or irreversibly block compromised cards directly from the ATM UI.
+- **🎨 Premium UI/UX**: State-of-the-art "Glassmorphism" design with smooth CSS transitions, toast notification feedback, and a fully responsive grid.
+
+## 🛠️ Technology Stack
+
+* **Backend**: Python 3, Flask REST API
+* **Frontend**: HTML5, CSS3 (Vanilla), JavaScript (ES6+ Fetch API)
+* **Icons**: FontAwesome 6
+
+## 🚀 How to Run Locally
+
+1. **Clone the Repository**
+   ```bash
+   git clone <your-github-repo-url>
+   cd "ATM using flask"
+   ```
+
+2. **Install Dependencies**
+   Ensure you have Python installed, then install the required `flask` package:
+   ```bash
+   pip install flask
+   ```
+
+3. **Start the Flask Server**
+   ```bash
+   python app.py
+   ```
+
+4. **Open the Application**
+   Open your preferred web browser and navigate to:
+   ```text
+   http://127.0.0.1:5000
+   ```
+
+## 🧪 Demo Accounts
+
+The database runs in-memory. You can test the application using the following pre-configured dummy accounts:
+
+| User Name   | Account Number | PIN  | Initial Balance | Bank Name |
+| :---        | :---           | :--- | :---            | :---      |
+| Niraj Kumar | `1000000001`   | `9876` | ₹ 50,000      | State Bank of India |
+| Raj Sharma  | `1000000002`   | `1234` | ₹ 10,000      | HDFC Bank |
 
 
+## 📂 Project Structure
 
+```text
+├── app.py                  # Main Flask backend server and API routes
+├── templates/
+│   └── index.html          # Main Single-Page Application (SPA) HTML view
+├── static/
+│   ├── style.css           # Vanilla CSS implementing Glassmorphism & Responsiveness
+│   └── script.js           # Client-side logic for API requests and DOM manipulation
+└── README.md               # Project documentation
+```
+
+## 📜 License
+
+This project is open-source and available under the [MIT License](LICENSE).
