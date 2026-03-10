@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern ATM Interface</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Load FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="atm-container">
+        <!-- Overlay for toast notifications -->
+        <div id="toast-container"></div>
+
+        <!-- Screen 1: Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="glass-card login-card">
+                <div class="logo">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <h1>Welcome to Smart ATM</h1>
+                <p>Please enter your Account Number & PIN</p>
+                <div class="pin-input-group">
+                    <input type="text" id="acc-input" placeholder="Account Number" autocomplete="off"
+                        style="margin-bottom: 15px; letter-spacing: 2px;">
+                    <input type="password" id="pin-input" maxlength="4" placeholder="•••• PIN" autocomplete="off">
+                </div>
+                <button id="login-btn" class="primary-btn">Enter <i class="fa-solid fa-arrow-right"></i></button>
+                <div style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted);">
+                    <p>Demo Accounts:</p>
+                    <p>Acc: 1000000001 (PIN: 9876)</p>
+                    <p>Acc: 1000000002 (PIN: 1234)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Dashboard Screen -->
+        <div id="dashboard-screen" class="screen">
+            <div class="glass-card main-dashboard">
+                <header class="dashboard-header">
+                    <div class="user-info">
+                        <h2>Hello, <span id="user-name">User</span></h2>
+                        <p class="bank-name"><i class="fa-solid fa-building-columns"></i> <span
+                                id="bank-name">Bank</span></p>
+                    </div>
+                    <button class="logout-btn" onclick="logout()" title="Logout"><i
+                            class="fa-solid fa-power-off"></i></button>
+                </header>
+
+                <div class="balance-card">
+                    <p>Available Balance <span style="font-size:0.7rem;">(Acc: <span
+                                id="active-acc-disp"></span>)</span></p>
+                    <h1 id="current-balance">₹ 0.00</h1>
+                </div>
+
+                <div class="action-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div class="action-btn" onclick="showScreen('withdraw-screen')">
+                        <div class="icon-circle"><i class="fa-solid fa-money-bill-wave"></i></div>
+                        <span style="font-size: 0.85rem;">Withdraw</span>
+                    </div>
+                    <div class="action-btn" onclick="showScreen('deposit-screen')">
+                        <div class="icon-circle"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                        <span style="font-size: 0.85rem;">Deposit</span>
+                    </div>
+                    <div class="action-btn" onclick="showScreen('transfer-screen')">
+                        <div class="icon-circle"><i class="fa-solid fa-money-bill-transfer"></i></div>
+                        <span style="font-size: 0.85rem;">Transfer</span>
+                    </div>
+                    <div class="action-btn" onclick="fetchHistory(); showScreen('history-screen')">
+                        <div class="icon-circle"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <span style="font-size: 0.85rem;">History</span>
+                    </div>
+                    <div class="action-btn" onclick="showScreen('settings-screen')" style="grid-column: span 2;">
+                        <div class="icon-circle"><i class="fa-solid fa-gear"></i></div>
+                        <span style="font-size: 0.85rem;">Settings</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Withdraw Screen -->
+        <div id="withdraw-screen" class="screen">
+            <div class="glass-card sub-screen">
+                <button class="back-btn" onclick="showScreen('dashboard-screen')"><i class="fa-solid fa-arrow-left"></i>
+                    Back</button>
+                <h2>Withdraw Cash</h2>
+                <div class="input-group">
+                    <label>Amount (₹) - Limit: ₹20,000/day</label>
+                    <input type="number" id="withdraw-amount" placeholder="Enter amount..." min="1">
+                </div>
+                <div class="quick-amounts">
+                    <button onclick="setWithdrawAmount(500)">+500</button>
+                    <button onclick="setWithdrawAmount(1000)">+1000</button>
+                    <button onclick="setWithdrawAmount(2000)">+2000</button>
+                    <button onclick="setWithdrawAmount(5000)">+5000</button>
+                </div>
+                <button class="primary-btn" onclick="handleWithdraw()"><i class="fa-solid fa-money-check-dollar"></i>
+                    Withdraw</button>
+            </div>
+        </div>
+
+        <!-- Screen 4: Deposit Screen -->
+        <div id="deposit-screen" class="screen">
+            <div class="glass-card sub-screen">
+                <button class="back-btn" onclick="showScreen('dashboard-screen')"><i class="fa-solid fa-arrow-left"></i>
+                    Back</button>
+                <h2>Deposit Cash</h2>
+                <div class="input-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="deposit-amount" placeholder="Enter amount..." min="1">
+                </div>
+                <button class="primary-btn" onclick="handleDeposit()"><i class="fa-solid fa-piggy-bank"></i>
+                    Deposit</button>
+            </div>
+        </div>
+
+        <!-- Screen 4.5: Transfer Screen -->
+        <div id="transfer-screen" class="screen">
+            <div class="glass-card sub-screen">
+                <button class="back-btn" onclick="showScreen('dashboard-screen')"><i class="fa-solid fa-arrow-left"></i>
+                    Back</button>
+                <h2>Bank Transfer</h2>
+                <div class="input-group">
+                    <label>Destination Account Number</label>
+                    <input type="text" id="transfer-target" placeholder="e.g. 1000000002" style="letter-spacing: 2px;">
+                </div>
+                <div class="input-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="transfer-amount" placeholder="Enter amount..." min="1">
+                </div>
+                <button class="primary-btn" onclick="handleTransfer()"><i class="fa-solid fa-paper-plane"></i> Send
+                    Money</button>
+            </div>
+        </div>
+
+        <!-- Screen 5: History Screen -->
+        <div id="history-screen" class="screen">
+            <div class="glass-card sub-screen">
+                <button class="back-btn" onclick="showScreen('dashboard-screen')"><i class="fa-solid fa-arrow-left"></i>
+                    Back</button>
+                <h2>Transaction History</h2>
+                <div class="history-list" id="history-list">
+                    <!-- History items will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 6: Settings Screen -->
+        <div id="settings-screen" class="screen">
+            <div class="glass-card sub-screen">
+                <button class="back-btn" onclick="showScreen('dashboard-screen')"><i class="fa-solid fa-arrow-left"></i>
+                    Back</button>
+                <h2>Account Settings</h2>
+
+                <div class="settings-section">
+                    <h3>Change PIN</h3>
+                    <div class="input-group">
+                        <input type="password" id="old-pin" placeholder="Current PIN" maxlength="4">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="new-pin" placeholder="New Modular PIN" maxlength="4">
+                    </div>
+                    <button class="primary-btn outline" onclick="handleChangePin()">Update PIN</button>
+                </div>
+
+                <div class="settings-section danger-zone">
+                    <h3>Danger Zone</h3>
+                    <p>Blocking the card is irreversible from the ATM.</p>
+                    <button class="danger-btn" onclick="handleBlockCard()"><i class="fa-solid fa-ban"></i> Block
+                        Card</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 7: Receipt Screen -->
+        <div id="receipt-screen" class="screen">
+            <div class="glass-card sub-screen recipe-container" id="printable-receipt">
+                <div class="receipt-header">
+                    <i class="fa-solid fa-building-columns"
+                        style="font-size: 2rem; color: var(--primary); margin-bottom: 20px;"></i>
+                    <h2>Smart ATM Receipt</h2>
+                    <p id="receipt-bank" style="color: var(--text-muted);"></p>
+                </div>
+                <div class="receipt-body">
+                    <div class="receipt-row"><span>Date/Time:</span> <strong id="rec-date"></strong></div>
+                    <div class="receipt-row"><span>Txn ID:</span> <strong id="rec-id"></strong></div>
+                    <div class="receipt-row"><span>ATM ID:</span> <strong>ATM-98234HQ</strong></div>
+                    <div class="receipt-row"><span>Txn Type:</span> <strong id="rec-type"></strong></div>
+                    <div class="receipt-row" id="rec-extra-row" style="display:none; color: var(--primary);">
+                        <span>Details:</span> <strong id="rec-extra"></strong></div>
+                    <div class="receipt-row" style="margin-top: 20px; font-size: 1.2rem;"><span>Amount:</span> <strong
+                            id="rec-amt"></strong></div>
+                    <div class="receipt-row" style="font-size: 1.2rem;"><span>Avail Bal:</span> <strong
+                            id="rec-bal"></strong></div>
+                </div>
+                <div class="receipt-footer">
+                    <p>Thank you for banking with us!</p>
+                </div>
+                <div class="no-print" style="margin-top: 40px; display: flex; gap: 10px;">
+                    <button class="primary-btn" onclick="window.print()"><i class="fa-solid fa-print"></i>
+                        Print</button>
+                    <button class="primary-btn outline" onclick="showScreen('dashboard-screen')"><i
+                            class="fa-solid fa-check"></i> Done</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>
